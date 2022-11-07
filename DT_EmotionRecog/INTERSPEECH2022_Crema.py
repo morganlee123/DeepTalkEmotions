@@ -1,3 +1,13 @@
+# Author: Morgan Sandler (sandle20@msu.edu)
+#
+# Runs the Experiment 1 from the paper. Loads the extracted embeddings,
+# splits the test/train sets, and then generates the single SVM model.
+# At the end of the program there are confusion matrix generators and
+# then f-score reports are printed
+# 
+# Experiment 1 - Step 3
+#
+
 from re import I
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,40 +18,6 @@ from sklearn.metrics import classification_report, confusion_matrix
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 import joblib
-
-def balanced_subsample(x,y,subsample_size=1.0):
-
-    class_xs = []
-    min_elems = None
-
-    for yi in np.unique(y):
-        elems = x[(y == yi)]
-        class_xs.append((yi, elems))
-        if min_elems == None or elems.shape[0] < min_elems:
-            min_elems = elems.shape[0]
-
-    use_elems = min_elems
-    if subsample_size < 1:
-        use_elems = int(min_elems*subsample_size)
-
-    xs = []
-    ys = []
-
-    for ci,this_xs in class_xs:
-        if len(this_xs) > use_elems:
-            np.random.shuffle(this_xs)
-
-        x_ = this_xs[:use_elems]
-        y_ = np.empty(use_elems)
-        y_.fill(ci)
-
-        xs.append(x_)
-        ys.append(y_)
-
-    xs = np.concatenate(xs)
-    ys = np.concatenate(ys)
-
-    return xs,ys
 
 # open embeddings
 data = pd.read_pickle('./working_data/extracted_embeddings.pk')
@@ -74,8 +50,6 @@ for e in X:
 X = np.array(X_prep)
 
 
-# Old preprocessing step
-#X = tf.keras.preprocessing.sequence.pad_sequences(X, dtype='float32')
 print(X.shape)
 
 # Subject disjointness between train/validation/test
@@ -86,7 +60,8 @@ TRAIN_SIZE = 0.7 # Training sample of the data
 TEST_SIZE = 0.3 # Used for final testing of performance
 
 # Determine which subjects belong to which set
-X_train_subs, X_test_subs = train_test_split(possible_subjects, test_size=TEST_SIZE, random_state=42)
+RANDOM_STATE = 600
+X_train_subs, X_test_subs = train_test_split(possible_subjects, test_size=TEST_SIZE, random_state=RANDOM_STATE)
 
 # There are now 2 sets of subjects X_train_subs | X_test_subs
 # AKA INDEPENDENCE WOO
@@ -128,45 +103,38 @@ print(sad, happy, neutral, angry)
 '''
 
 # TODO: fix this balance
-from imblearn.datasets import make_imbalance
-X_train, y_train = make_imbalance(X_train, y_train, sampling_strategy={1: 720, 2: 720, 3: 720, 5: 720},random_state=42)
-X_test, y_test = make_imbalance(X_test, y_test, sampling_strategy={1: 320, 2: 320, 3: 320, 5: 320},random_state=42)
+#from imblearn.datasets import make_imbalance
+X_train, y_train = make_imbalance(X_train, y_train, sampling_strategy={1: 720, 2: 720, 3: 720, 5: 720},random_state=RANDOM_STATE)
+X_test, y_test = make_imbalance(X_test, y_test, sampling_strategy={1: 320, 2: 320, 3: 320, 5: 320},random_state=RANDOM_STATE)
 print('Balanced emotion classes')
 
 # SIZES OF TRAIN, VAL, TEST
 print(X_train.shape,y_train.shape,X_test.shape,y_test.shape)
 
-#nsamples, nx, ny = X_train.shape
-#reshaped_X_train = X_train.reshape((nsamples,nx*ny))
-#print(reshaped_X_train.shape)
-
-# TODO: INTERIM MAX POOLING TEST
-#from skimage.measure import block_reduce
-#X_train_maxpooled = []
-#for i in reshaped_X_train:
-#    curr = block_reduce(i, block_size=(4,), func=np.mean)
-#    X_train_maxpooled.append(curr)
-#X_train_maxpooled = np.array(X_train_maxpooled)
-#print(X_train_maxpooled.shape)
 
 # LR Train
 #model = LogisticRegression(random_state=10, multi_class='multinomial', penalty='l2', solver='newton-cg').fit(X_train, y_train)
 #model = LogisticRegression(random_state=5, multi_class='multinomial', penalty='l2', solver='newton-cg').fit(X_train_maxpooled, y_train)
 
-# SVM Train
-model = SVC(random_state=10, kernel='rbf', gamma=0.8, C=1, probability=True).fit(X_train, y_train)
+# SVM Train 
+model = SVC(random_state=99999, kernel='rbf', gamma=0.1, C=1000, probability=True).fit(X_train, y_train)
 #model = SVC(random_state=10, kernel='poly', degree=3, probability=True).fit(X_train, y_train)
 #model = SVC(random_state=10, kernel='linear').fit(X_train, y_train)
 
-#nsamples, nx, ny = X_test.shape
-#reshaped_X_test = X_test.reshape((nsamples,nx*ny))
+#from sklearn.neural_network import MLPClassifier
+#model = MLPClassifier(random_state=RANDOM_STATE, max_iter=300, hidden_layer_sizes=(100,100, 100,)).fit(X_train, y_train)
 
-# TODO: INTERIM MAX POOLING TEST
-#from skimage.measure import block_reduce
-#X_test_maxpooled = []
-#for i in reshaped_X_test:
-#    curr = block_reduce(i, block_size=(4,), func=np.mean)
-#    X_test_maxpooled.append(curr)
+#from sklearn.model_selection import GridSearchCV
+ 
+# defining parameter range
+#param_grid = {'C': [0.1, 1, 10, 100, 1000],
+#              'gamma': [1, 0.1, 0.01, 0.001, 0.0001],
+#              'kernel': ['rbf']}
+ 
+#grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3)
+ 
+# fitting the model for grid search
+#grid.fit(X_train, y_train)
 
 
 # LR Test
@@ -178,14 +146,18 @@ model = SVC(random_state=10, kernel='rbf', gamma=0.8, C=1, probability=True).fit
 from sklearn.metrics import f1_score
 print('weighted f-score', f1_score(y_test, model.predict(X_test), average='weighted'))
 print('Accuracy', model.score(X_test, y_test))
-print(confusion_matrix(y_test, model.predict(X_test)))
+conf_mat = confusion_matrix(y_test, model.predict(X_test))
+print(conf_mat)
+
+plt.figure()
+import seaborn as sns
+sns.heatmap(conf_mat, annot=True)
+plt.show()
 
 #X_test_maxpooled = np.array(X_test_maxpooled)
 #print(X_test_maxpooled.shape)
 #print(model.score(X_test_maxpooled, y_test))
 #print(confusion_matrix(y_test, model.predict(X_test_maxpooled)))
-
-
 
 # Poly SVM Test
 #print(poly.predict_proba(reshaped_X_test))
@@ -202,7 +174,7 @@ print(confusion_matrix(y_test, model.predict(X_test)))
 # Save to file in the current working directory
 
 joblib_file = "./models/CREMA-D/4emo/SVM_AllEmbeddings.pkl"
-joblib.dump(model, joblib_file)
+joblib.dump(grid, joblib_file)
 print('saved model', joblib_file)
 
 # SAVING TEST CASES

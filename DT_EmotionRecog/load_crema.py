@@ -1,9 +1,21 @@
+# Author: Morgan Sandler (sandle20@msu.edu)
+#
+# Generates a CREMA-D pandas DataFrame that prepares data for
+# embedding extraction
+#
+# Experiment 1 - Step 1
+# AKA
+# Experiment 3 - Step 1
+
 import numpy as np
 import pandas as pd
 import os
 
 # SECTION 1 -------------- Load CREMA Data
+
+# regular crema TODO: Add your own CREMA path here
 Crema = "/research/iprobe-sandle20/sandle20/CREMA-D/AudioWAV/"
+
 crema_directory_list = os.listdir(Crema)
 
 file_emotion = []
@@ -45,5 +57,5 @@ subjects_df = pd.DataFrame(file_subject, columns=['Subject'])
 
 Crema_df = pd.concat([emotion_df, path_df, subjects_df], axis=1)
 
-Crema_df.to_parquet('./working_data/crema.pq')
+Crema_df.to_parquet('./working_data/noisy_crema.pq')
 print('Successfully saved the DF to a parquet in ./working_data')

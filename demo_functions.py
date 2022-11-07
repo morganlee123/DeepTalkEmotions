@@ -83,7 +83,7 @@ def OneD_Triplet_CNN_encoder(file_path, model_save_path, ftr_type = 'MFCC-LPC', 
     return embed
 
 
-def DeepTalk_encoder(file_path, model_save_path, module_name, preprocess=True, normalize=True, sampling_rate=8000, duration=None):
+def DeepTalk_encoder(file_path, model_save_path, module_name, preprocess=True, normalize=True, sampling_rate=16000, duration=None):
 
     encoder.load_model(model_save_path, module_name=module_name)
 

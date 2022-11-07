@@ -146,7 +146,7 @@ class SpeakerEncoder(nn.Module):
         # L2-normalize it
         embeds = F.normalize(embeds_style, p=2, dim=1)
 
-
+        print(embeds.shape)
         return embeds
 
     def similarity_matrix(self, embeds):

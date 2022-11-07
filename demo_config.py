@@ -6,10 +6,13 @@ gpu_id = '0,1,2,3,4,5,6,7'
 
 # DeepTalk encoder (model_GST: fCNN -> GST) trained on Librispeech, VoxCeleb1, and VoxCeleb2 Data
 # Generic Model
-enc_model_fpath = Path('../trained_models/Generic/Encoder/model_GST.pt')
+enc_model_fpath = Path('/research/iprobe-sandle20/sandle20/SpeechEmotionRecognitionExperiments/DeepTalk/trained_models/Generic/Encoder/model_GST.pt')
 enc_module_name = "model_GST"
-syn_model_dir = Path('../trained_models/Generic/Synthesizer/logs-model_GST/taco_pretrained/')
-voc_model_fpath = Path('../trained_models/Generic/Vocoder/model_GST/model_GST.pt')
+syn_model_dir = Path('/research/iprobe-sandle20/sandle20/SpeechEmotionRecognitionExperiments/DeepTalk/trained_models/Generic/Synthesizer/logs-model_GST/taco_pretrained/')
+voc_model_fpath = Path('/research/iprobe-sandle20/sandle20/SpeechEmotionRecognitionExperiments/DeepTalk/trained_models/Generic/Vocoder/model_GST/model_GST.pt')
+
+# TODO: Change this /research/iprobe-sandle20/sandle20/SpeechEmotionRecognitionExperiments/DeepTalk
+
 
 #------------------------------------------------------------------------------------
 

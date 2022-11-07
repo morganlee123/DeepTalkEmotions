@@ -1,3 +1,10 @@
+# Author: Morgan Sandler (sandle20@msu.edu)
+#
+# Can use this file to check stored test results if needed
+#
+# Auxiliary File
+#
+
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix

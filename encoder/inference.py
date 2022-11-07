@@ -44,7 +44,7 @@ def load_model(weights_fpath: Path, module_name, device=None):
 
     _model.load_state_dict(checkpoint["model_state"])
     _model.eval()
-    print("Loaded encoder \"%s\" trained to step %d" % (weights_fpath.name, checkpoint["step"]))
+    print("Loaded encoder \"%s\" trained to step %d" % (weights_fpath, checkpoint["step"]))
 
 #
 # def load_model(weights_fpath: Path, module_name='model_baseline', device=None):
@@ -147,7 +147,7 @@ def compute_partial_slices(n_samples, partial_utterance_n_frames=partials_n_fram
     return wav_slices, mel_slices
 
 
-def embed_utterance(wav, using_partials=True, return_partials=False, **kwargs):
+def embed_utterance(wav, using_partials=True, return_partials=True, **kwargs):
     """
     Computes an embedding for a single utterance.
 
